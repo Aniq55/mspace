@@ -28,6 +28,26 @@ def data_loader(data_key):
     
     return TemporalGraph(X = G_['X'], A = G_['A'], name=data_key)
 
+def get_data(dataset, sampling=None):
+    X = np.load(DATA_LOC + FILES[dataset][0])
+    # from GRAM-ODE
+    dist_matrix = np.load(DATA_LOC + FILES[dataset][1])
+    num_node = dist_matrix.shape[0]
+    std = np.std(dist_matrix[dist_matrix != np.float32('inf')])
+    mean = np.mean(dist_matrix[dist_matrix != np.float32('inf')])
+    
+    # works OK for METR-LA and PEMS-BAY
+    # A = (((dist_matrix < 0.3*mean).astype('float') + np.eye(num_node) ) > 0).astype('float')
+    
+    # works OK for PEMS0*:
+    dist_matrix = (dist_matrix - mean) / std
+    sigma = 1e20
+    sp_matrix = np.exp(- dist_matrix**2 / sigma**2)
+    A = ((sp_matrix > 0.99).astype('float') + np.eye(num_node) > 0).astype('float')
+
+    return TemporalGraph(X = X['data'], A = A, name=dataset)
+
+
 def str2vec(X):
     return np.array([int(x) for x in X])
 

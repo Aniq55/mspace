@@ -1,5 +1,5 @@
 #!/bin/bash
-script=/home/chri6578/Documents/GG_SPP/markovspace/main.py
+script=/home/chri6578/Documents/mspace/main.py
 datasets_single=(tennis wikimath pedalme chickenpox)
 datasets_multi=(pems03 pems04 pems07 pems08 pemsbay metrla)
 

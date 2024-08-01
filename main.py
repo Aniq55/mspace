@@ -8,7 +8,8 @@ import time
 
 
 # load dataset
-dataset = data_loader(args.dataset)
+# dataset = data_loader(args.dataset)
+dataset = get_data(args.dataset)
 
 if args.ind:
     dataset.A = np.copy(np.eye(dataset.n))
