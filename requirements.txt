@@ -1,0 +1,4 @@
+numpy==1.24.3
+pykalman==0.9.5
+pykalman_py311_update==0.9.6
+tqdm==4.65.0
