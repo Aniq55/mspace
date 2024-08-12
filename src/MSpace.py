@@ -88,6 +88,43 @@ class MSpace:
         
         return {'RMSE': RMSE, 'MAE': MAE} # , 'RSQ': RSQ, 'COS': COS, 'COR': COR}
     
+    
+    def test_mv(self, q):
+        # Online learning / Testing
+        error_mtx = np.zeros((self.T-1-q-self.T_train, self.n, self.d, q))
+        # r_square_mtx = np.zeros((self.T-1-q-self.T_train, self.n, self.d))
+        # cosine_mtx = np.zeros((self.T-1-q-self.T_train, self.n, self.d))
+        # corr_mtx = np.zeros((self.T-1-q-self.T_train, self.n, self.d))
+
+        for t in tqdm(range(self.T_train, self.T-q-1)):
+            shock_now = self.shock_chain[t]
+            shock_next = self.shock_chain[t+1]
+            
+            for i, ARM in enumerate(self.arm_list):
+                shock_next_arm = np.array([ARM.extract(ARM.preprocess(self.shock_chain[t+m+1]), i) for m in range(q)]).T
+                shock_next_pred = ARM.extract(ARM.sample_multistep(shock_now, q, t), i)
+                
+                obs_arm = vec_cumsum(shock_next_arm)
+                obs_pred =  vec_cumsum(shock_next_pred)
+                error_mtx[t-self.T_train][i] = np.abs(obs_arm - obs_pred)*np.where(obs_arm != 0, 1, np.nan)
+                # r_square_mtx[t-self.T_train][i] = r_square(obs_arm, obs_pred)
+                # cosine_mtx[t-self.T_train][i] = cos_similarity(obs_arm, obs_pred)
+                # corr_mtx[t-self.T_train][i] = correlation(obs_arm, obs_pred)
+
+            for ARM in self.arm_list:
+                ARM.update(self.shock_chain[t], self.shock_chain[t+1], t)
+            
+
+        # Metrics
+        MAE = np.nanmean(error_mtx)
+        RMSE = np.nanmean(np.sqrt(np.nanmean(np.square(error_mtx), axis=1)))
+        # RSQ = np.mean(r_square_mtx)
+        # COS = np.mean(cosine_mtx)
+        # COR = np.mean(corr_mtx)
+        
+        return {'RMSE': RMSE, 'MAE': MAE} # , 'RSQ': RSQ, 'COS': COS, 'COR': COR}
+    
+    
     def run(self, q):
         self.train()
         

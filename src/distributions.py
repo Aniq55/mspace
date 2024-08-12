@@ -8,6 +8,7 @@ class Gaussian:
         
     def update(self, Q):
         mu = np.mean(Q, axis=1)
+        
         Q_ = Q - np.expand_dims(mu, 1)
         sigma = (1/Q.shape[1])*Q_@Q_.T
         
@@ -55,9 +56,20 @@ class Mean:
         self.n = n
         
     def update(self, Q):
-        mu = np.mean(Q, axis=1)   
+        # mu = np.mean(Q, axis=1)
+        self.n = Q.shape[0]
+        
+        # missing values (ignoring zeros)
+        mu = np.zeros((self.n,))
+        for i in range(self.n):
+            W = Q[i][ Q[i]!= 0 ]
+            if len(W)==0:
+                mu[i] = 0
+            else:
+                mu[i] = np.mean(W)
+                
         self.mu = mu 
-        self.n = mu.shape[0]
+        
     
     def sample(self):
         return self.mu

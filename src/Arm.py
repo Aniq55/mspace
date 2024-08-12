@@ -83,6 +83,12 @@ class Arm:
             
         if queue_state not in self.queue_dict:
             self.queue_dict[queue_state] = Queue(self.M_max, queue_state, self.arm, self.size, self.d, self.sample_mode)
+        
+        
+        # # ignoring missing value
+        # if not np.any(shock_next == 0):    
+        #     self.queue_dict[queue_state].enqueue(self.preprocess(shock_next))
+        
         self.queue_dict[queue_state].enqueue(self.preprocess(shock_next))
         
         # update transition potential matrix
