@@ -20,7 +20,8 @@ data_keys_dyn = ['tennis', 'engcovid']
 
 
 def data_loader(data_key):
-    with open(f"/home/chri6578/Documents/GG_SPP/markovspace/dataset/{data_key}.pkl", 'rb') as file:
+    print(f"Loading from /home/chri6578/Documents/mspace/dataset/{data_key}.pkl ")
+    with open(f"/home/chri6578/Documents/mspace/dataset/{data_key}.pkl", 'rb') as file:
         G_ = pickle.load(file)
     
     if len(G_['A'].shape)==3:
